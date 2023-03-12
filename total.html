@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+      <h1>BOOKING APP</h1>
+      <form id="myform">
+            <label for="nameid">Name</label>
+            <input type="text" id="nameid"/>
+      
+            <label for="emailid" >Email</label>
+            <input type="text" id="emailid"/>
+
+            <button type="submit">submit</button>
+      </form>
+      <ul id="users"></ul>                      
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+<script>
+                    let parent=document.getElementById("myform");
+                    //to prevent unnecesary events,while submit the form.(does't reload).
+                    parent.addEventListener("submit",function(event){
+                                        event.preventDefault();
+                                        var name=event.target.nameid.value;
+                                        var email=event.target.emailid.value;
+                                        var obj={
+                                                            name,
+                                                            email
+                                        }
+                                        localStorage.setItem(obj.name,JSON.stringify(obj))
+                                        axios.post("https://crudcrud.com/api/a7e758d6288f4d1f9f8b18d8f3926996/appointment",obj)
+                                        //axios always takes a promise.
+                                        .then((response)=>{
+                                                            showOnScreen(response.data)
+                                                            console.log(response)
+                                        })
+                                        .catch((err)=>{
+                                                            comsole.log(err)
+                                        })
+                                        //showOnScreen(obj)
+
+
+                    })
+                    //while loading the screen ,dats does not gone.
+                    window.addEventListener("DOMContentLoaded",()=>{
+                                        axios.get("https://crudcrud.com/api/a7e758d6288f4d1f9f8b18d8f3926996/appointment")
+                                        .then((response)=>{
+                                                            console.log(response)
+                                                            for(var i=0;i<response.data.length;i++){
+                                                                                showOnScreen(response.data[i]);
+                                                            }
+                                        })
+                                        .catch((err)=>{
+                                                            console.log(err)
+                                        })
+
+                                        axios.delete("https://crudcrud.com/api/a7e758d6288f4d1f9f8b18d8f3926996/appointment")
+                                        .then((response)=>{
+                                                            showOnScreen(response.data)
+                                                            console.log(response)
+                                        })
+                                        .catch((err)=>{
+                                                            console.log(err)
+                                        })
+
+                                        axios.put("https://crudcrud.com/api/a7e758d6288f4d1f9f8b18d8f3926996/appointment")
+                                        .then((response)=>{
+                                                            showOnScreen(response.data)
+                                                            console.log(response)
+                                        })
+                                        .catch((err)=>{
+                                                            console.log(err)
+                                        })
+
+                    })
+                    // function to show on sceen.
+                    function showOnScreen(obj){
+                                        let parent1=document.getElementById("users")
+
+                                        let child=document.createElement("li");
+                                        child.textContent=obj.name+"  "+obj.email;
+                                        let deletebutton=document.createElement("input");
+                                        deletebutton.type="button";
+                                        deletebutton.value="Delete";
+                                        deletebutton.onclick=()=>{
+                                                            localStorage.removeItem(obj.name)
+                                                            parent1.removeChild(child)
+                                        }
+                                        let editbutton=document.createElement("input");
+                                        editbutton.type="button"
+                                        editbutton.value="Edit"
+                                        editbutton.onclick=()=>{
+                                                            localStorage.removeItem(obj.name)
+                                                            parent1.removeChild(child)
+                                                            document.getElementById("nameid").value=obj.name;
+                                                            document.getElementById("emailid").value=obj.email;
+                                        }
+                                        child.appendChild(editbutton)
+                                        child.appendChild(deletebutton)
+                                        parent1.appendChild(child)
+}
+
+</script>
+</html>
